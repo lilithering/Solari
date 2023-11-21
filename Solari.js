@@ -32,6 +32,7 @@ const m_Express = {
     row: "<div class='row'></div>",
     col: "<div class='col'></div>",
     solari: "<script src='/cdn/Solari.js'></script>",
+    log: `<script src='/cdn/LogSystem.js'></script>`,
 };
 
 class AXSolari {
@@ -42,7 +43,7 @@ class AXSolari {
         this.router = express.Router();
         cinfo("Setting defaults");
         this.router.use("/cdn", express.static("./../CDN"));
-        this.router.use("/scripts", express.static("C:\\Users\\JuniorSilveira\\Repositórios\\MAXXLATINA\\Administrativo\\scripts"));
+        this.router.use("/scripts", express.static(`${this.strRootPath}/scripts`));
         this.router.get("/favicon.ico", this._cbRouteFavicon);
         this.router.get(/\/(.*)/, this._cbRequest);
         cinfo("Gateway iniciado com sucesso", { name: this.constructor.name });
