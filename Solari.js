@@ -31,7 +31,7 @@ const m_Express = {
     },
     row: "<div class='row'></div>",
     col: "<div class='col'></div>",
-
+    solari: "<script src='/cdn/Solari.js'></script>",
 };
 
 class AXSolari {
