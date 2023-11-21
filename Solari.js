@@ -14,7 +14,7 @@ const { parse } = require("./../ArchLib/Common/html");
 const m_Express = {
     style: {
         bootstrap: "<link rel='stylesheet' href='/cdn/tp/bootstrap.css'>",
-        system: "<link rel='stylesheet' href='/cdn/tp/StyleSystem.css'>",
+        system: "<link rel='stylesheet' href='/cdn/StyleSystem.css'>",
     },
     script: {
         bootstrap: "<script src='/cdn/tp/bootstrap.js'></script>",
