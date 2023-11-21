@@ -11,7 +11,7 @@ const { ReadFile, PathExists } = require("./../ArchLib/FileSystem");
 const express = require("./../ArchLib/Common/express");
 const { parse } = require("./../ArchLib/Common/html");
 
-const x = {
+const m_Express = {
     style: {
         bootstrap: "<link rel='stylesheet' href='/cdn/tp/bootstrap.css'>",
         system: "<link rel='stylesheet' href='/cdn/tp/StyleSystem.css'>",
@@ -39,17 +39,18 @@ class AXSolari {
         cinfo("Iniciando Gateway");
         if (!strRootPath) return cerr("Diretório base não informado");
         this.strRootPath = strRootPath;
-        if (!this.Create()) return cerr("Falha ao tentar criar a rota");
-        if (!this.Defaults()) return cerr("Falha ao tentar definir os padrões da rota");
-        if (!this.Favicon()) return cerr("Falha ao definir favicon");
-        if (!this.Trigger()) return cerr("Falha ao definir configurações de rota");
-
+        this.router = express.Router();
+        cinfo("Setting defaults");
+        this.router.use("/cdn", express.static("./../CDN"));
+        this.router.use("/scripts", express.static("C:\\Users\\JuniorSilveira\\Repositórios\\MAXXLATINA\\Administrativo\\scripts"));
+        this.router.get("/favicon.ico", this._cbRouteFavicon);
+        this.router.get(/\/(.*)/, this._cbRequest);
         cinfo("Gateway iniciado com sucesso", { name: this.constructor.name });
-    }
-    cbRouteFavicon = (req, res) => {
+    };
+    _cbRouteFavicon = (req, res) => {
         res.send("");
     };
-    cbRouteRender = (req, res) => {
+    _cbRequest = (req, res) => {
         cinfo("Request", { hostname: req.hostname, originalUrl: req.originalUrl });
         if (req.params[0] == '') req.params[0] = 'index';
         let contentPath = `${this.strRootPath}/content/${req.params[0]}.html`;
@@ -62,7 +63,7 @@ class AXSolari {
         let element;
         while ((element = documentRoot.querySelector("x")) != null) {
             let attr = element.rawAttrs.trim();
-            let content = x;
+            let content = m_Express;
             try {
                 attr.split(".").forEach(c => content = content[c]);
                 content.errorTest;
@@ -92,37 +93,11 @@ class AXSolari {
         }
         res.send(documentRoot.toString());
     };
-    Favicon() {
-        this.router.get("/favicon.ico", this.cbRouteFavicon);
-
-        return cinfo("Favicon definido");
-    };
-    Create() {
-        this.router = express.Router();
-
-        return cinfo("Rota criada com sucesso");
-    };
-    Trigger() {
-        this.router.get(/\/(.*)/, this.cbRouteRender);
-
-        return cinfo("Gatilhos acionados");;
-    };
-    Defaults() {
-        this.router.use("/cdn", express.static("./../CDN"));
-        this.router.use("/scripts", express.static("C:\\Users\\JuniorSilveira\\Repositórios\\MAXXLATINA\\Administrativo\\scripts"));
-
-        return cinfo("Padrões definidos com sucesso");
-    };
     Static(strURL, strPath) {
         if (!PathExists(strPath)) return cerr("O caminho especificado não existe.", { strPath });
         this.router.use(strURL, express.static(strPath));
 
         return cinfo("Rota definida com sucesso", { strURL, strPath });
-    };
-    Parse() {
-        clog("Executando parsing", {});
-
-        return cinfo("Sucesso");
     };
 };
 
