@@ -6,10 +6,11 @@ Update: 23-11-20
 [Output] AX::Solari
 ******************************/
 
-const { cerr, cinfo, clog } = require("./../ArchLib/LogManagement");
+const { cerr, cinfo, clog, debug } = require("./../ArchLib/LogManagement");
 const { ReadFile, PathExists } = require("./../ArchLib/FileSystem");
 const express = require("./../ArchLib/Common/express");
 const { parse } = require("./../ArchLib/Common/html");
+const { LXMicrosoftSQL } = require("./../ArchLib/MicrosoftSQL");
 
 const m_Express = {
     style: {
@@ -35,8 +36,14 @@ const m_Express = {
     log: `<script src='/cdn/LogSystem.js'></script>`,
 };
 
+class AXSolariDebug extends LXMicrosoftSQL {
+    constructor(Options) {
+        super(Options)
+    }
+}
+
 class AXSolari {
-    constructor(strRootPath) {
+    constructor(strRootPath, DatabaseOptions) {
         cinfo("Iniciando Gateway");
         if (!strRootPath) return cerr("Diretório base não informado");
         this.strRootPath = strRootPath;
@@ -44,9 +51,16 @@ class AXSolari {
         cinfo("Setting defaults");
         this.router.use("/cdn", express.static("./../CDN"));
         this.router.use("/scripts", express.static(`${this.strRootPath}/scripts`));
+        this.router.get("/data/:database/:procedure", this._cbDatabase);
         this.router.get("/favicon.ico", this._cbRouteFavicon);
         this.router.get(/\/(.*)/, this._cbRequest);
         cinfo("Gateway iniciado com sucesso", { name: this.constructor.name });
+    };
+    _cbDatabase = async (req, res) => {
+        debug("", { d: req.params });
+        // database permission checking
+        res.send("DATA");
+        return;
     };
     _cbRouteFavicon = (req, res) => {
         res.send("");
@@ -99,6 +113,11 @@ class AXSolari {
         this.router.use(strURL, express.static(strPath));
 
         return cinfo("Rota definida com sucesso", { strURL, strPath });
+    };
+    DebugConnection() {
+        var connection = new AXSolariDebug({
+
+        })
     };
 };
 
